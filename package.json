@@ -1,0 +1,49 @@
+{
+  "name": "portafolio-profesional",
+  "version": "1.0.0",
+  "description": "Portafolio profesional para Ingeniero de Sistemas Informáticos y Developer Senior Odoo",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "astro dev",
+    "lint": "eslint src --ext .ts,.tsx,.astro",
+    "format": "prettier --write src",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "portfolio",
+    "odoo",
+    "developer",
+    "astro",
+    "react",
+    "typescript",
+    "tailwindcss"
+  ],
+  "author": {
+    "name": "Tu Nombre",
+    "email": "tu.email@empresa.com",
+    "url": "https://tu-portafolio.vercel.app"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@astrojs/react": "^3.0.0",
+    "@astrojs/tailwind": "^5.0.0",
+    "@astrojs/typescript": "^1.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "astro": "^4.0.0",
+    "prettier": "^3.0.0",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "lucide-react": "^0.300.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
