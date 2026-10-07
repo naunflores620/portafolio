@@ -63,7 +63,6 @@ export const cv = {
     es: 'Ingeniero de Sistemas Informáticos',
   },
   location: { en: 'El Salvador', es: 'El Salvador' } as Localized,
-  // TODO: confirm whether the email should be public.
   email: '',
   links: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/naun-flores-485051174/' },
@@ -135,7 +134,6 @@ export const cv = {
         en: 'A virtual lawyer built on the complete case law of El Salvador.',
         es: 'Un abogado virtual con toda la jurisprudencia de El Salvador.',
       },
-      // TODO: add the stack and a public link when available.
       tags: [
         { en: 'Legal tech', es: 'Legal tech' },
         { en: 'Own product', es: 'Producto propio' },
