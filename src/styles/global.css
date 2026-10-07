@@ -1,0 +1,114 @@
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/400-italic.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+
+/* Palette: cool paper, green-grey ink, green-bar ledger bands, plum accent. */
+:root {
+  --paper: #fafbfa;
+  --ink: #18201d;
+  --muted: #56625c;
+  --rule: #d3ddd7;
+  --band: #edf3ee;
+  --accent: #6a3d60;
+  --accent-ink: #ffffff;
+  --focus: #6a3d60;
+
+  --font: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --measure: 40rem;
+  --margin-col: 11rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #141a18;
+    --ink: #e4eae6;
+    --muted: #9aa7a0;
+    --rule: #2c3632;
+    --band: #1a221f;
+    --accent: #d1a6c6;
+    --accent-ink: #1b1219;
+    --focus: #d1a6c6;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #141a18;
+  --ink: #e4eae6;
+  --muted: #9aa7a0;
+  --rule: #2c3632;
+  --band: #1a221f;
+  --accent: #d1a6c6;
+  --accent-ink: #1b1219;
+  --focus: #d1a6c6;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
