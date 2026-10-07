@@ -2,11 +2,12 @@ import type { Lang } from '../data/cv';
 
 export const ui = {
   en: {
-    metaTitle: 'Naun Flores, technology consultant and Odoo developer',
+    metaTitle: 'Naun Flores, Senior Odoo Developer',
     metaDescription:
-      'Naun Flores: technology consultant and software developer from El Salvador. Senior Odoo Developer implementing management and inventory systems, and builder of LexOS.',
+      'Naun Flores: Senior Odoo Developer and technical-functional consultant from El Salvador, specialised in accounting, payroll and inventory, and builder of LexOS.',
     skip: 'Skip to content',
     downloadPdf: 'Résumé PDF',
+    emailMe: 'Email me',
     downloadDocx: 'Résumé DOCX',
     switchLang: 'Ver en español',
     switchLangShort: 'ES',
@@ -35,11 +36,12 @@ export const ui = {
     updated: 'Last updated',
   },
   es: {
-    metaTitle: 'Naun Flores, consultor de tecnología y developer Odoo',
+    metaTitle: 'Naun Flores, desarrollador sénior Odoo',
     metaDescription:
-      'Naun Flores: consultor de tecnología y desarrollador de software de El Salvador. Developer Senior Odoo que implementa sistemas de gestión e inventario, y creador de LexOS.',
+      'Naun Flores: desarrollador sénior Odoo y consultor técnico-funcional de El Salvador, especializado en contabilidad, nómina e inventario, y creador de LexOS.',
     skip: 'Saltar al contenido',
     downloadPdf: 'CV en PDF',
+    emailMe: 'Escríbeme',
     downloadDocx: 'CV en DOCX',
     switchLang: 'View in English',
     switchLangShort: 'EN',

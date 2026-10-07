@@ -46,7 +46,18 @@ const paletteGroups: CommandGroup[] = [
   },
   {
     label: s.groupLinks,
-    items: cv.links.map((link) => ({ label: link.label, href: link.href, external: true })),
+    items: [
+      ...(cv.email
+        ? [
+            {
+              label: s.emailMe,
+              keywords: 'email correo contact contacto',
+              href: `mailto:${cv.email}`,
+            },
+          ]
+        : []),
+      ...cv.links.map((link) => ({ label: link.label, href: link.href, external: true })),
+    ],
   },
 ];
 
@@ -65,13 +76,19 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
     <header class="masthead">
       <div class="intro">
         <h1>{cv.name}</h1>
-        <p class="headline">
-          {t(cv.headline, lang)}. {t(cv.tagline, lang)}
-        </p>
-        <p class="location">
-          <Icon name="pin" />
-          {t(cv.location, lang)}
-        </p>
+        <p class="headline">{t(cv.headline, lang)}</p>
+        <ul class="contact">
+          <li>
+            <Icon name="pin" />
+            {t(cv.location, lang)}
+          </li>
+          {cv.email && (
+            <li>
+              <Icon name="mail" />
+              <a href={`mailto:${cv.email}`}>{cv.email}</a>
+            </li>
+          )}
+        </ul>
         <div class="actions">
           {linkedin && (
             <a
@@ -93,6 +110,11 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
               target="_blank"
             >
               <Icon name="github" />
+            </a>
+          )}
+          {cv.email && (
+            <a class="square" href={`mailto:${cv.email}`} aria-label={s.emailMe}>
+              <Icon name="mail" />
             </a>
           )}
           <a class="primary" href={files.pdf} download>
@@ -181,14 +203,16 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
 
       <section id="skills" aria-labelledby="skills-title">
         <h2 id="skills-title">{s.skills}</h2>
-        <div class="skill-group">
-          <h3 class="label">{s.technical}</h3>
-          <ul class="chips">
-            {cv.technical.map((skill) => (
-              <li>{skill}</li>
-            ))}
-          </ul>
-        </div>
+        {cv.skills.map((group) => (
+          <div class="skill-group">
+            <h3 class="label">{t(group.name, lang)}</h3>
+            <ul class="chips">
+              {group.items.map((item) => (
+                <li>{t(item, lang)}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
         <div class="skill-group">
           <h3 class="label">{s.functional}</h3>
           <ul class="chips">
@@ -211,7 +235,9 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
                 </span>
               )}
             </div>
-            <p class="muted-body">{t(item.degree, lang)}</p>
+            <p class="muted-body">
+              {t(item.degree, lang)}. {t(item.status, lang)}.
+            </p>
           </article>
         ))}
       </section>
@@ -233,7 +259,7 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
         <ul class="languages">
           {cv.languages.map((item) => (
             <li>
-              {t(item.name, lang)} <span>{t(item.level, lang).toLowerCase()}</span>
+              <strong>{t(item.name, lang)}</strong> <span>{t(item.level, lang)}</span>
             </li>
           ))}
         </ul>
@@ -252,8 +278,7 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
 
   <div class="hint">
     <button type="button" data-palette-open>
-      {s.palettePress} <kbd>Ctrl</kbd> + <kbd>K</kbd>{' '}
-      {s.paletteHint}
+      {s.palettePress} <kbd>Ctrl</kbd> + <kbd>K</kbd> {s.paletteHint}
     </button>
   </div>
 
@@ -338,13 +363,25 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
     font-size: 1.125rem;
   }
 
-  .location {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    padding: 0;
+    list-style: none;
     color: var(--muted);
     font-family: var(--mono);
     font-size: 0.8125rem;
+  }
+
+  .contact li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .contact a {
+    color: inherit;
   }
 
   .actions {
@@ -559,15 +596,18 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
   }
 
   .languages {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 2rem;
+    display: grid;
+    gap: 0.375rem;
     padding: 0;
     list-style: none;
   }
 
+  .languages strong {
+    font-weight: 600;
+  }
+
   .languages span {
-    color: var(--muted);
+    color: var(--ink-2);
   }
 
   .footer {

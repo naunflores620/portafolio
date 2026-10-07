@@ -12,6 +12,7 @@ import { chromium } from 'playwright-core';
 import {
   BorderStyle,
   Document,
+  ExternalHyperlink,
   HeadingLevel,
   HorizontalPositionAlign,
   HorizontalPositionRelativeFrom,
@@ -36,9 +37,15 @@ const INK = '111316';
 const MUTED = '5F6773';
 const RULE = 'D5DAE1';
 
+/** A contact item; with `href` it becomes a clickable link in the PDF and DOCX. */
+interface Contact {
+  text: string;
+  href?: string;
+}
+
 /** The résumé as structured blocks, shared by the PDF and DOCX renderers. */
 type Block =
-  | { kind: 'header'; name: string; headline: string; tagline: string; contact: string[] }
+  | { kind: 'header'; name: string; headline: string; contact: Contact[] }
   | { kind: 'section'; title: string }
   | { kind: 'text'; text: string }
   | { kind: 'entry'; title: string; date: string; meta: string }
@@ -54,13 +61,12 @@ function blocks(lang: Lang): Block[] {
     kind: 'header',
     name: cv.name,
     headline: t(cv.headline, lang),
-    tagline: t(cv.tagline, lang),
     contact: [
-      t(cv.location, lang),
-      cv.email,
-      'naunflores.com',
-      ...cv.links.map((link) => link.href.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '')),
-    ].filter(Boolean),
+      { text: t(cv.location, lang) },
+      ...(cv.email ? [{ text: cv.email, href: `mailto:${cv.email}` }] : []),
+      { text: cv.website.label, href: cv.website.href },
+      ...cv.links.map((link) => ({ text: link.label, href: link.href })),
+    ],
   });
 
   out.push({ kind: 'section', title: s.profile });
@@ -84,13 +90,19 @@ function blocks(lang: Lang): Block[] {
     }
   }
 
+  out.push({ kind: 'section', title: s.technicalSkills });
+  for (const group of cv.skills) {
+    out.push({
+      kind: 'term',
+      term: t(group.name, lang),
+      text: `${group.items.map((item) => t(item, lang)).join(', ')}.`,
+    });
+  }
+
   out.push({ kind: 'section', title: s.expertise });
   for (const area of cv.areas) {
     out.push({ kind: 'term', term: t(area.name, lang), text: t(area.items, lang) });
   }
-
-  out.push({ kind: 'section', title: s.technicalSkills });
-  out.push({ kind: 'tags', items: cv.technical });
 
   out.push({ kind: 'section', title: s.education });
   for (const item of cv.education) {
@@ -98,7 +110,7 @@ function blocks(lang: Lang): Block[] {
       kind: 'entry',
       title: t(item.degree, lang),
       date: item.start ? `${item.start} – ${item.end}` : '',
-      meta: item.school,
+      meta: `${item.school}, ${t(item.status, lang)}`,
     });
   }
 
@@ -110,16 +122,22 @@ function blocks(lang: Lang): Block[] {
   }
 
   out.push({ kind: 'section', title: s.languages });
-  out.push({
-    kind: 'tags',
-    items: cv.languages.map((item) => `${t(item.name, lang)}: ${t(item.level, lang)}`),
-  });
+  for (const item of cv.languages) {
+    out.push({ kind: 'term', term: t(item.name, lang), text: `${t(item.level, lang)}.` });
+  }
 
   return out;
 }
 
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** Escaped text where hyphenated words never break across lines (keeps them intact for parsers). */
+const prose = (text: string) =>
+  escape(text).replace(
+    /[\p{L}\d]+(?:-[\p{L}\d]+)+/gu,
+    (word) => `<span class="nowrap">${word}</span>`,
+  );
 
 function toHtml(lang: Lang, content: Block[], photoUri: string) {
   let body = '';
@@ -136,9 +154,14 @@ function toHtml(lang: Lang, content: Block[], photoUri: string) {
         body += `<header>
           <div class="who">
             <h1>${escape(block.name)}</h1>
-            <p class="headline">${escape(block.headline)}</p>
-            <p class="tagline">${escape(block.tagline)}</p>
-            <p class="contact">${block.contact.map(escape).join('<span class="sep"> | </span>')}</p>
+            <p class="headline">${prose(block.headline)}</p>
+            <p class="contact">${block.contact
+              .map((item) =>
+                item.href
+                  ? `<a href="${escape(item.href)}">${escape(item.text)}</a>`
+                  : escape(item.text),
+              )
+              .join('<span class="sep"> | </span>')}</p>
           </div>
           <img src="${photoUri}" alt="${escape(block.name)}">
         </header>`;
@@ -147,7 +170,7 @@ function toHtml(lang: Lang, content: Block[], photoUri: string) {
         body += `<h2>${escape(block.title)}</h2>`;
         break;
       case 'text':
-        body += `<p class="text">${escape(block.text)}</p>`;
+        body += `<p class="text">${prose(block.text)}</p>`;
         break;
       case 'entry':
         body += `<div class="entry"><h3>${escape(block.title)}</h3><span class="date">${escape(block.date)}</span></div>`;
@@ -158,10 +181,10 @@ function toHtml(lang: Lang, content: Block[], photoUri: string) {
           body += '<ul>';
           inList = true;
         }
-        body += `<li>${escape(block.text)}</li>`;
+        body += `<li>${prose(block.text)}</li>`;
         break;
       case 'term':
-        body += `<p class="term"><strong>${escape(block.term)}.</strong> ${escape(block.text)}</p>`;
+        body += `<p class="term"><strong>${escape(block.term)}.</strong> ${prose(block.text)}</p>`;
         break;
       case 'tags':
         // The commas are invisible but keep the list readable when parsers extract the text.
@@ -173,19 +196,20 @@ function toHtml(lang: Lang, content: Block[], photoUri: string) {
 
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${escape(cv.name)}</title>
 <style>
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 9.6pt; line-height: 1.38; color: #${INK}; margin: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9.6pt; line-height: 1.34; color: #${INK}; margin: 0; }
   p, h1, h2, h3, ul { margin: 0; }
 
   header { display: flex; align-items: center; justify-content: space-between; gap: 20pt;
-           padding-bottom: 12pt; border-bottom: 2pt solid #${INK}; }
+           padding-bottom: 10pt; border-bottom: 2pt solid #${INK}; }
   h1 { font-size: 26pt; line-height: 1.05; letter-spacing: -0.6pt; }
   .headline { margin-top: 5pt; font-size: 12pt; font-weight: bold; }
-  .tagline { margin-top: 1pt; font-size: 10pt; color: #${MUTED}; }
-  .contact { margin-top: 6pt; font-size: 9pt; color: #${MUTED}; }
+  .contact { margin-top: 7pt; font-size: 9.2pt; color: #${MUTED}; }
+  .contact a { color: #${INK}; text-decoration: none; }
+  .nowrap { white-space: nowrap; }
   .sep { color: #${RULE}; }
   header img { width: ${PHOTO_PT}pt; height: ${PHOTO_PT}pt; border-radius: 12pt; object-fit: cover; flex: none; }
 
-  h2 { margin: 11pt 0 5pt; padding-bottom: 2pt; border-bottom: 0.75pt solid #${RULE};
+  h2 { margin: 9pt 0 4pt; padding-bottom: 2pt; border-bottom: 0.75pt solid #${RULE};
        font-size: 10.5pt; letter-spacing: 0.2pt; break-after: avoid; }
   .text { color: #222; }
 
@@ -195,10 +219,10 @@ function toHtml(lang: Lang, content: Block[], photoUri: string) {
   .meta { margin-bottom: 3pt; font-size: 9pt; color: #${MUTED}; }
 
   ul { padding-left: 12pt; }
-  li { margin-bottom: 1.5pt; padding-left: 2pt; }
+  li { margin-bottom: 1pt; padding-left: 2pt; }
   li::marker { color: #${MUTED}; }
 
-  .term { margin-bottom: 2pt; }
+  .term { margin-bottom: 1pt; }
   .term strong { font-weight: bold; }
 
   .tags { line-height: 2; }
@@ -243,17 +267,24 @@ function toDocx(content: Block[], photoJpg: Buffer) {
             children: [picture, new TextRun(block.name)],
           }),
           new Paragraph({
-            spacing: { after: 20 },
-            children: [new TextRun({ text: block.headline, bold: true, size: 24 })],
-          }),
-          new Paragraph({
             spacing: { after: 100 },
-            children: [new TextRun({ text: block.tagline, color: MUTED, size: 20 })],
+            children: [new TextRun({ text: block.headline, bold: true, size: 24 })],
           }),
           new Paragraph({
             spacing: { after: 160 },
             border: { bottom: { style: BorderStyle.SINGLE, size: 16, color: INK, space: 8 } },
-            children: [new TextRun({ text: block.contact.join(' | '), color: MUTED, size: 18 })],
+            children: block.contact.flatMap((item, index) => {
+              const separator = index ? [new TextRun({ text: ' | ', color: RULE, size: 18 })] : [];
+              const run = new TextRun({
+                text: item.text,
+                color: item.href ? INK : MUTED,
+                size: 18,
+              });
+              return [
+                ...separator,
+                item.href ? new ExternalHyperlink({ link: item.href, children: [run] }) : run,
+              ];
+            }),
           }),
         );
         break;
@@ -360,7 +391,7 @@ function countWords(content: Block[]) {
     .map((block) => {
       switch (block.kind) {
         case 'header':
-          return [block.name, block.headline, block.tagline, ...block.contact].join(' ');
+          return [block.name, block.headline, ...block.contact.map((item) => item.text)].join(' ');
         case 'section':
           return block.title;
         case 'entry':

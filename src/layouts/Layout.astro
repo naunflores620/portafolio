@@ -29,7 +29,11 @@ const person = {
   alumniOf: cv.education
     .filter((item) => item.school)
     .map((item) => ({ '@type': 'CollegeOrUniversity', name: item.school })),
-  knowsAbout: [...cv.technical, ...cv.areas.map((area) => area.name.en)],
+  knowsAbout: [
+    ...new Set(cv.skills.flatMap((group) => group.items.map((item) => item.en))),
+    ...cv.areas.map((area) => area.name.en),
+  ],
+  email: cv.email ? `mailto:${cv.email}` : undefined,
   knowsLanguage: cv.languages.map((language) => language.name.en),
   sameAs: cv.links.map((link) => link.href),
 };
