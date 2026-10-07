@@ -100,9 +100,17 @@ function blocks(lang: Lang): Block[] {
   }
 
   out.push({ kind: 'section', title: s.expertise });
-  for (const area of cv.areas) {
-    out.push({ kind: 'term', term: t(area.name, lang), text: t(area.items, lang) });
-  }
+  out.push({ kind: 'text', text: t(cv.functionalSummary, lang) });
+  out.push({
+    kind: 'term',
+    term: s.areas,
+    text: `${cv.areas.map((area) => t(area.name, lang)).join(', ')}.`,
+  });
+  out.push({
+    kind: 'term',
+    term: s.sectors,
+    text: `${cv.sectors.map((sector) => t(sector, lang)).join(', ')}.`,
+  });
 
   out.push({ kind: 'section', title: s.education });
   for (const item of cv.education) {

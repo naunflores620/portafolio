@@ -73,9 +73,21 @@ export const cv = {
   ] as Link[],
 
   summary: {
-    en: 'Senior Odoo developer and technical-functional consultant, working with Odoo since 2020. I take companies from process analysis to go-live: requirements, custom development, integrations and data migration. My edge is combining development with functional knowledge of accounting and payroll, so what I build fits how the business really operates, including management and inventory processes in large operations.',
-    es: 'Desarrollador sénior Odoo y consultor técnico-funcional, trabajando con Odoo desde 2020. Acompaño a las empresas desde el análisis de procesos hasta la puesta en marcha: requerimientos, desarrollo a medida, integraciones y migración de datos. Mi diferencial es combinar el desarrollo con conocimiento funcional de contabilidad y nómina, para que lo que construyo encaje con la operación real del negocio, incluidos procesos de gestión e inventario en operaciones grandes.',
+    en: 'Senior Odoo developer and technical-functional consultant, working with Odoo since 2020. I lead end-to-end ERP implementations that integrate every area of a company, from accounting, payroll and inventory to sales, purchasing and production, for businesses in El Salvador in manufacturing, import and distribution, restaurants and seafood import. My edge is combining hands-on development with functional knowledge of how those businesses really operate.',
+    es: 'Desarrollador sénior Odoo y consultor técnico-funcional, trabajando con Odoo desde 2020. Lidero implementaciones de ERP de principio a fin que integran todas las áreas de la empresa, desde contabilidad, nómina e inventario hasta ventas, compras y producción, para empresas de El Salvador en fabricación, importación y venta, restaurantes e importación de mariscos. Mi diferencial es combinar el desarrollo con conocimiento funcional de cómo operan realmente esos negocios.',
   },
+
+  functionalSummary: {
+    en: 'End-to-end integration of every business area in a single ERP, for companies in El Salvador.',
+    es: 'Integración completa de todas las áreas de la empresa en un solo ERP, para empresas de El Salvador.',
+  },
+
+  sectors: [
+    { en: 'Manufacturing', es: 'Fabricación' },
+    { en: 'Import and distribution', es: 'Importación y venta' },
+    { en: 'Restaurants', es: 'Restaurantes' },
+    { en: 'Seafood import', es: 'Importación de mariscos' },
+  ] as Localized[],
 
   experience: [
     {
@@ -89,16 +101,16 @@ export const cv = {
       end: '',
       highlights: [
         {
-          en: 'Lead the development and implementation team, coordinating functional and technical consultants from requirements analysis to go-live.',
-          es: 'Lidero el equipo de desarrollo e implementación y coordino a consultores funcionales y técnicos desde el análisis de requerimientos hasta la puesta en marcha.',
+          en: 'Lead a team of 3 developers and 2 IT support specialists, coordinating development, implementation and support from requirements analysis to go-live.',
+          es: 'Dirijo un equipo de 3 desarrolladores y 2 especialistas de soporte TI, coordinando desarrollo, implementación y soporte desde el análisis de requerimientos hasta la puesta en marcha.',
         },
         {
-          en: 'Translate clients’ accounting and payroll processes into Odoo configuration and custom functionality as technical-functional consultant.',
-          es: 'Traduzco los procesos contables y de nómina de cada cliente a configuración y funcionalidad a medida en Odoo como consultor técnico-funcional.',
+          en: 'Deliver end-to-end ERP implementations that integrate every business area for companies in manufacturing, import and distribution, restaurants and seafood import.',
+          es: 'Implemento ERP de principio a fin que integran todas las áreas del negocio, en empresas de fabricación, importación y venta, restaurantes e importación de mariscos.',
         },
         {
-          en: 'Implement management and inventory processes for companies with large operations.',
-          es: 'Implemento procesos de gestión e inventario en empresas con operaciones grandes.',
+          en: 'Translate each client’s processes, from accounting and payroll to inventory and sales, into Odoo configuration and custom functionality as technical-functional consultant.',
+          es: 'Traduzco los procesos de cada cliente, de contabilidad y nómina a inventario y ventas, a configuración y funcionalidad a medida en Odoo como consultor técnico-funcional.',
         },
         {
           en: 'Develop custom modules with the Odoo ORM, Python, XML/QWeb and OWL, and optimise slow views, reports and scheduled jobs on PostgreSQL.',
@@ -115,9 +127,9 @@ export const cv = {
       ],
       tags: [
         same('Odoo 11–19'),
-        { en: 'Accounting', es: 'Contabilidad' },
-        { en: 'Payroll', es: 'Nómina' },
-        { en: 'Inventory', es: 'Inventario' },
+        { en: 'Full ERP', es: 'ERP completo' },
+        { en: 'Team of 5', es: 'Equipo de 5' },
+        { en: 'Multi-sector', es: 'Multisector' },
       ],
     },
   ] as Role[],
@@ -178,6 +190,13 @@ export const cv = {
       items: {
         en: 'Stock control and valuation, lot and serial-number traceability, large product catalogues.',
         es: 'Control y valoración de existencias, trazabilidad por lote y número de serie, catálogos grandes.',
+      },
+    },
+    {
+      name: { en: 'Manufacturing', es: 'Fabricación' },
+      items: {
+        en: 'Production processes integrated with inventory, purchasing and accounting.',
+        es: 'Procesos de producción integrados con inventario, compras y contabilidad.',
       },
     },
     {

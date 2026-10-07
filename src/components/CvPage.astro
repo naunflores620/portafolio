@@ -215,9 +215,18 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
         ))}
         <div class="skill-group">
           <h3 class="label">{s.functional}</h3>
+          <p class="muted-body">{t(cv.functionalSummary, lang)}</p>
           <ul class="chips">
             {cv.areas.map((area) => (
               <li title={t(area.items, lang)}>{t(area.name, lang)}</li>
+            ))}
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3 class="label">{s.sectors}</h3>
+          <ul class="chips">
+            {cv.sectors.map((sector) => (
+              <li>{t(sector, lang)}</li>
             ))}
           </ul>
         </div>

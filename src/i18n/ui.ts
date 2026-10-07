@@ -4,7 +4,7 @@ export const ui = {
   en: {
     metaTitle: 'Naun Flores, Senior Odoo Developer',
     metaDescription:
-      'Naun Flores: Senior Odoo Developer and technical-functional consultant from El Salvador, specialised in accounting, payroll and inventory, and builder of LexOS.',
+      'Naun Flores: Senior Odoo Developer and technical-functional consultant from El Salvador, specialised in end-to-end ERP implementations, and builder of LexOS.',
     skip: 'Skip to content',
     downloadPdf: 'Résumé PDF',
     emailMe: 'Email me',
@@ -21,6 +21,8 @@ export const ui = {
     technicalSkills: 'Technical skills',
     functional: 'Functional',
     expertise: 'Functional expertise',
+    sectors: 'Sectors',
+    areas: 'Areas',
     education: 'Education',
     certifications: 'Certifications',
     languages: 'Languages',
@@ -38,7 +40,7 @@ export const ui = {
   es: {
     metaTitle: 'Naun Flores, desarrollador sénior Odoo',
     metaDescription:
-      'Naun Flores: desarrollador sénior Odoo y consultor técnico-funcional de El Salvador, especializado en contabilidad, nómina e inventario, y creador de LexOS.',
+      'Naun Flores: desarrollador sénior Odoo y consultor técnico-funcional de El Salvador, especializado en implementaciones de ERP completas, y creador de LexOS.',
     skip: 'Saltar al contenido',
     downloadPdf: 'CV en PDF',
     emailMe: 'Escríbeme',
@@ -55,6 +57,8 @@ export const ui = {
     technicalSkills: 'Habilidades técnicas',
     functional: 'Funcionales',
     expertise: 'Áreas funcionales',
+    sectors: 'Sectores',
+    areas: 'Áreas',
     education: 'Educación',
     certifications: 'Certificaciones',
     languages: 'Idiomas',
