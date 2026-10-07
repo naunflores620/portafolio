@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+import { cv, type Lang } from '../data/cv';
+import { photo, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const strings = ui[lang];
+const site = Astro.site ?? new URL('http://localhost:4321');
+const alternates = { en: new URL('/', site).href, es: new URL('/es/', site).href };
+const image = new URL(photo.fallback, site).href;
+
+// Structured data so crawlers and résumé parsers can read the profile without guessing.
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: cv.name,
+  jobTitle: cv.headline[lang],
+  url: alternates[lang],
+  image,
+  description: cv.summary[lang],
+  address: { '@type': 'PostalAddress', addressCountry: 'SV' },
+  worksFor: cv.experience
+    .filter((role) => role.company && !role.end)
+    .map((role) => ({ '@type': 'Organization', name: role.company })),
+  alumniOf: cv.education
+    .filter((item) => item.school)
+    .map((item) => ({ '@type': 'CollegeOrUniversity', name: item.school })),
+  knowsAbout: [...cv.technical, ...cv.areas.map((area) => area.name.en)],
+  knowsLanguage: cv.languages.map((language) => language.name.en),
+  sameAs: cv.links.map((link) => link.href),
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{strings.metaTitle}</title>
+    <meta name="description" content={strings.metaDescription} />
+    <meta name="author" content={cv.name} />
+    <link rel="canonical" href={alternates[lang]} />
+    <link rel="alternate" hreflang="en" href={alternates.en} />
+    <link rel="alternate" hreflang="es" href={alternates.es} />
+    <link rel="alternate" hreflang="x-default" href={alternates.en} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#000000" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={strings.metaTitle} />
+    <meta property="og:description" content={strings.metaDescription} />
+    <meta property="og:url" content={alternates[lang]} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_SV'} />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

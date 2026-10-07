@@ -1,22 +1,14 @@
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
 
-// https://astro.build/config
+// Vercel exposes the production domain at build time; fall back to localhost for local builds.
+const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+
 export default defineConfig({
-  integrations: [react(), tailwind()],
-  site: 'https://tu-portafolio.vercel.app',
+  site: productionHost ? `https://${productionHost}` : 'http://localhost:4321',
   output: 'static',
-  build: {
-    assets: '_assets'
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'es'],
+    routing: { prefixDefaultLocale: false },
   },
-  vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `@import "src/styles/variables.scss";`
-        }
-      }
-    }
-  }
 });

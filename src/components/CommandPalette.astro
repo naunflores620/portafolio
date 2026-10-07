@@ -1,0 +1,256 @@
+---
+import Icon from './Icon.astro';
+
+export interface Command {
+  label: string;
+  /** Extra words that should match the search, e.g. the other language. */
+  keywords?: string;
+  href?: string;
+  download?: boolean;
+  external?: boolean;
+  /** Built-in behaviour instead of a link. */
+  action?: 'theme';
+}
+
+export interface CommandGroup {
+  label: string;
+  items: Command[];
+}
+
+interface Props {
+  groups: CommandGroup[];
+  strings: { label: string; search: string; empty: string; close: string };
+}
+
+const { groups, strings } = Astro.props;
+---
+
+<dialog class="palette" aria-label={strings.label} data-palette>
+  <div class="search">
+    <Icon name="search" />
+    <label for="palette-input" class="visually-hidden">
+      {strings.search}
+    </label>
+    <input
+      id="palette-input"
+      type="text"
+      placeholder={strings.search}
+      autocomplete="off"
+      spellcheck="false"
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="palette-list"
+      data-palette-input
+    />
+    <button type="button" class="esc" data-palette-close aria-label={strings.close}>
+      Esc
+    </button>
+  </div>
+
+  <div id="palette-list" class="list" role="listbox" aria-label={strings.label}>
+    {groups.map((group) => (
+      <div class="group" data-palette-group>
+        <p class="group-label">{group.label}</p>
+        {group.items.map((item) =>
+          item.action ? (
+            <button
+              type="button"
+              class="item"
+              role="option"
+              data-palette-item
+              data-theme-toggle
+              data-search={`${item.label} ${item.keywords ?? ''}`.toLowerCase()}
+            >
+              {item.label}
+            </button>
+          ) : (
+            <a
+              class="item"
+              role="option"
+              href={item.href}
+              data-palette-item
+              data-search={`${item.label} ${item.keywords ?? ''}`.toLowerCase()}
+              download={item.download || undefined}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener' : undefined}
+            >
+              {item.label}
+            </a>
+          ),
+        )}
+      </div>
+    ))}
+    <p class="empty" hidden data-palette-empty>
+      {strings.empty}
+    </p>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-palette]');
+  const input = document.querySelector<HTMLInputElement>('[data-palette-input]');
+  const empty = document.querySelector<HTMLElement>('[data-palette-empty]');
+
+  if (dialog && input && empty) {
+    const items = [...dialog.querySelectorAll<HTMLElement>('[data-palette-item]')];
+    const groups = [...dialog.querySelectorAll<HTMLElement>('[data-palette-group]')];
+    let active = 0;
+
+    const visible = () => items.filter((item) => !item.hidden);
+
+    const highlight = (index: number) => {
+      const list = visible();
+      if (!list.length) return;
+      active = (index + list.length) % list.length;
+      list.forEach((item, i) => item.setAttribute('aria-selected', String(i === active)));
+      list[active].scrollIntoView({ block: 'nearest' });
+    };
+
+    const filter = () => {
+      const query = input.value.trim().toLowerCase();
+      for (const item of items) item.hidden = !item.dataset.search?.includes(query);
+      for (const group of groups) {
+        group.hidden = ![...group.querySelectorAll<HTMLElement>('[data-palette-item]')].some(
+          (item) => !item.hidden,
+        );
+      }
+      empty.hidden = visible().length > 0;
+      highlight(0);
+    };
+
+    const open = () => {
+      if (dialog.open) return;
+      input.value = '';
+      filter();
+      dialog.showModal();
+      input.focus();
+    };
+
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        dialog.open ? dialog.close() : open();
+      }
+    });
+
+    document.querySelectorAll('[data-palette-open]').forEach((button) => {
+      button.addEventListener('click', open);
+    });
+
+    dialog.querySelector('[data-palette-close]')?.addEventListener('click', () => dialog.close());
+
+    // Clicking the backdrop (the dialog element itself) closes it.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    input.addEventListener('input', filter);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        highlight(active + (event.key === 'ArrowDown' ? 1 : -1));
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        visible()[active]?.click();
+      }
+    });
+
+    for (const item of items) {
+      item.addEventListener('mousemove', () => highlight(visible().indexOf(item)));
+      item.addEventListener('click', () => dialog.close());
+    }
+  }
+</script>
+
+<style>
+  .palette {
+    width: min(100% - 2rem, 33rem);
+    max-height: min(70vh, 32rem);
+    margin: 18vh auto auto;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: var(--bg);
+    color: var(--ink);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.35);
+    overflow: hidden;
+  }
+
+  .palette[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .palette::backdrop {
+    background: var(--scrim);
+  }
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9375rem;
+  }
+
+  .esc {
+    min-height: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  .list {
+    padding: 0.5rem;
+    overflow-y: auto;
+  }
+
+  .group-label {
+    margin: 0.375rem 0.625rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .item {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .item[aria-selected='true'] {
+    background: var(--soft);
+  }
+
+  .item[hidden],
+  .group[hidden] {
+    display: none;
+  }
+
+  .empty {
+    padding: 1rem 0.75rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+</style>
