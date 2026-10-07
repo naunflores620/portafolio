@@ -1,17 +1,33 @@
 // Generates the downloadable résumés in public/cv/ from src/data/cv.ts.
 // Output follows common résumé-parser rules (e.g. Outlier): Arial, one column,
 // no tables, text boxes, headers or footers, at least 300 words, simple file names.
+// The photo sits beside the name; parsers skip it and read the text in order.
 //
 //   npm run cv            uses the installed Google Chrome
 //   CV_BROWSER=msedge npm run cv
 
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright-core';
-import { Document, HeadingLevel, Packer, Paragraph, TextRun } from 'docx';
+import {
+  Document,
+  HeadingLevel,
+  HorizontalPositionAlign,
+  HorizontalPositionRelativeFrom,
+  ImageRun,
+  Packer,
+  Paragraph,
+  TextRun,
+  TextWrappingSide,
+  TextWrappingType,
+  VerticalPositionAlign,
+  VerticalPositionRelativeFrom,
+} from 'docx';
 import { cv, formatPeriod, t, type Lang } from '../src/data/cv';
-import { cvFiles, ui } from '../src/i18n/ui';
+import { cvFiles, photo, ui } from '../src/i18n/ui';
 
 const MIN_WORDS = 300;
+/** Photo size in points (72 pt = 1 inch). */
+const PHOTO_PT = 68;
 
 interface Block {
   kind: 'h1' | 'h2' | 'h3' | 'p' | 'meta' | 'li';
@@ -87,10 +103,12 @@ function blocks(lang: Lang): Block[] {
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function toHtml(lang: Lang, content: Block[]) {
-  let body = '';
+function toHtml(lang: Lang, content: Block[], photoUri: string) {
+  // Name, headline and contact line go beside the photo; the rest flows below.
+  const [name, headline, contact, ...rest] = content;
+  let body = `<header><div><h1>${escape(name.text)}</h1><p>${escape(headline.text)}</p><p class="meta">${escape(contact.text)}</p></div><img src="${photoUri}" alt="${escape(cv.name)}"></header>`;
   let inList = false;
-  for (const block of content) {
+  for (const block of rest) {
     if (block.kind !== 'li' && inList) {
       body += '</ul>';
       inList = false;
@@ -107,8 +125,10 @@ function toHtml(lang: Lang, content: Block[]) {
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${escape(cv.name)}</title>
 <style>
   body { font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.35; color: #000; margin: 0; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 16pt; }
+  header img { width: ${PHOTO_PT}pt; height: ${PHOTO_PT}pt; border-radius: 6pt; object-fit: cover; flex: none; }
   h1 { font-size: 20pt; margin: 0 0 4pt; }
-  h2 { font-size: 12pt; margin: 12pt 0 4pt; padding-bottom: 2pt; border-bottom: 1px solid #000; break-after: avoid; }
+  h2 { font-size: 12pt; margin: 10pt 0 4pt; padding-bottom: 2pt; border-bottom: 1px solid #000; break-after: avoid; }
   h3 { break-after: avoid; }
   h3 { font-size: 10pt; margin: 8pt 0 0; }
   p { margin: 0 0 4pt; }
@@ -118,11 +138,34 @@ function toHtml(lang: Lang, content: Block[]) {
 </style></head><body>${body}</body></html>`;
 }
 
-function toDocx(content: Block[]) {
+function toDocx(content: Block[], photoJpg: Buffer) {
+  // Anchored to the top-right margin with text wrapping, so it is a picture, not a text box.
+  const picture = new ImageRun({
+    type: 'jpg',
+    data: photoJpg,
+    transformation: { width: (PHOTO_PT * 96) / 72, height: (PHOTO_PT * 96) / 72 },
+    altText: { name: cv.name, title: cv.name, description: cv.name },
+    floating: {
+      horizontalPosition: {
+        relative: HorizontalPositionRelativeFrom.MARGIN,
+        align: HorizontalPositionAlign.RIGHT,
+      },
+      verticalPosition: {
+        relative: VerticalPositionRelativeFrom.MARGIN,
+        align: VerticalPositionAlign.TOP,
+      },
+      wrap: { type: TextWrappingType.SQUARE, side: TextWrappingSide.LEFT },
+      margins: { left: 182880 },
+    },
+  });
+
   const children = content.map((block) => {
     switch (block.kind) {
       case 'h1':
-        return new Paragraph({ heading: HeadingLevel.TITLE, children: [new TextRun(block.text)] });
+        return new Paragraph({
+          heading: HeadingLevel.TITLE,
+          children: [picture, new TextRun(block.text)],
+        });
       case 'h2':
         return new Paragraph({
           heading: HeadingLevel.HEADING_1,
@@ -190,6 +233,8 @@ async function main() {
   await mkdir('public/cv', { recursive: true });
   const channel = process.env.CV_BROWSER ?? 'chrome';
   const browser = await chromium.launch({ channel });
+  const photoJpg = await readFile(`public${photo.fallback}`);
+  const photoUri = `data:image/jpeg;base64,${photoJpg.toString('base64')}`;
 
   try {
     for (const lang of ['en', 'es'] as Lang[]) {
@@ -200,16 +245,16 @@ async function main() {
       }
 
       const page = await browser.newPage();
-      await page.setContent(toHtml(lang, content), { waitUntil: 'load' });
+      await page.setContent(toHtml(lang, content, photoUri), { waitUntil: 'load' });
       const pdf = await page.pdf({
         format: 'Letter',
-        margin: { top: '0.6in', bottom: '0.6in', left: '0.7in', right: '0.7in' },
+        margin: { top: '0.5in', bottom: '0.5in', left: '0.7in', right: '0.7in' },
         displayHeaderFooter: false,
         printBackground: false,
       });
       await page.close();
 
-      const docx = await Packer.toBuffer(toDocx(content));
+      const docx = await Packer.toBuffer(toDocx(content, photoJpg));
       const files = cvFiles[lang];
       await writeFile(`public${files.pdf}`, pdf);
       await writeFile(`public${files.docx}`, docx);
