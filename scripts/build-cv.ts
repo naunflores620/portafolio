@@ -29,10 +29,10 @@ function blocks(lang: Lang): Block[] {
   ].filter(Boolean);
 
   out.push({ kind: 'h1', text: cv.name });
-  out.push({ kind: 'p', text: `${t(cv.headline, lang)}. ${t(cv.profession, lang)}.` });
+  out.push({ kind: 'p', text: `${t(cv.headline, lang)}. ${t(cv.tagline, lang)}` });
   out.push({ kind: 'meta', text: contact.join(' | ') });
 
-  out.push({ kind: 'h2', text: s.summary });
+  out.push({ kind: 'h2', text: s.profile });
   out.push({ kind: 'p', text: t(cv.summary, lang) });
 
   out.push({ kind: 'h2', text: s.experience });
@@ -44,20 +44,21 @@ function blocks(lang: Lang): Block[] {
       formatPeriod(role.start, role.end, lang),
     ].filter(Boolean);
     out.push({ kind: 'meta', text: meta.join(' | ') });
-    out.push({ kind: 'p', text: t(role.summary, lang) });
     for (const item of role.highlights) out.push({ kind: 'li', text: t(item, lang) });
+  }
+
+  if (cv.projects.length) {
+    out.push({ kind: 'h2', text: s.projects });
+    for (const project of cv.projects) {
+      out.push({ kind: 'li', text: `${project.name}: ${t(project.description, lang)}` });
+    }
   }
 
   out.push({ kind: 'h2', text: s.expertise });
   for (const area of cv.areas) {
     out.push({ kind: 'li', text: `${t(area.name, lang)}: ${t(area.items, lang)}` });
   }
-  out.push({
-    kind: 'p',
-    text: `${lang === 'en' ? 'Odoo versions' : 'Versiones de Odoo'}: ${cv.odooVersions.join(', ')}.`,
-  });
-
-  out.push({ kind: 'h2', text: s.technical });
+  out.push({ kind: 'h2', text: s.technicalSkills });
   out.push({ kind: 'p', text: `${cv.technical.join(', ')}.` });
 
   out.push({ kind: 'h2', text: s.education });
@@ -107,7 +108,8 @@ function toHtml(lang: Lang, content: Block[]) {
 <style>
   body { font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.35; color: #000; margin: 0; }
   h1 { font-size: 20pt; margin: 0 0 4pt; }
-  h2 { font-size: 12pt; margin: 12pt 0 4pt; padding-bottom: 2pt; border-bottom: 1px solid #000; }
+  h2 { font-size: 12pt; margin: 12pt 0 4pt; padding-bottom: 2pt; border-bottom: 1px solid #000; break-after: avoid; }
+  h3 { break-after: avoid; }
   h3 { font-size: 10pt; margin: 8pt 0 0; }
   p { margin: 0 0 4pt; }
   .meta { color: #333; }

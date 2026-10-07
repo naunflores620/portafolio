@@ -1,8 +1,10 @@
 # Naun Flores — Portafolio y CV
 
-Sitio personal y CV de **Naun Flores**, Developer Senior Odoo (versiones 11 a 19) y consultor funcional de contabilidad y nómina.
+Sitio personal y CV de **Naun Flores**, consultor de tecnología y desarrollador de software. Developer Senior Odoo e implementador de sistemas de gestión e inventario, creador de LexOS.
 
 - Inglés por defecto en `/`, español en `/es/`.
+- Negro por defecto, con modo claro opcional (se recuerda la elección).
+- Paleta de comandos con `Ctrl K` / `⌘K`: descargar el CV, cambiar idioma o tema e ir a cada sección.
 - CV descargable en PDF y DOCX, en inglés y en español, listo para subir a plataformas como Outlier: Arial, una columna, sin tablas, encabezados ni pies de página, más de 300 palabras.
 
 ## Editar el contenido
@@ -30,8 +32,9 @@ npm run build    # sitio estático en dist/
 
 ```
 src/data/cv.ts          contenido del CV (fuente única)
-src/i18n/ui.ts          textos de interfaz y rutas de los CV
-src/components/         CvPage, VersionRail, Icon
+src/i18n/ui.ts          textos de interfaz, rutas de los CV y de la foto
+public/images/          foto de perfil (webp y jpg)
+src/components/         CvPage, CommandPalette, Icon
 src/layouts/Layout.astro  <head>, SEO, hreflang y JSON-LD
 scripts/build-cv.ts     genera public/cv/*.pdf y *.docx
 ```

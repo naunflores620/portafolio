@@ -1,51 +1,35 @@
-@import '@fontsource/ibm-plex-sans/400.css';
-@import '@fontsource/ibm-plex-sans/400-italic.css';
-@import '@fontsource/ibm-plex-sans/500.css';
-@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
-/* Palette: cool paper, green-grey ink, green-bar ledger bands, plum accent. */
+/* Black by default; white only when the visitor picks it (remembered in localStorage). */
 :root {
-  --paper: #fafbfa;
-  --ink: #18201d;
-  --muted: #56625c;
-  --rule: #d3ddd7;
-  --band: #edf3ee;
-  --accent: #6a3d60;
-  --accent-ink: #ffffff;
-  --focus: #6a3d60;
+  --bg: #000000;
+  --ink: #fafafa;
+  --ink-2: #b4b4b4;
+  --muted: #8c8c8c;
+  --line: #262626;
+  --soft: #141414;
+  --live: #3ecf8e;
+  --scrim: rgb(0 0 0 / 0.7);
 
-  --font: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  --measure: 40rem;
-  --margin-col: 11rem;
-  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --font: 'Geist Variable', system-ui, sans-serif;
+  --mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --measure: 47.5rem;
+  --gutter: 1.5rem;
 
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --paper: #141a18;
-    --ink: #e4eae6;
-    --muted: #9aa7a0;
-    --rule: #2c3632;
-    --band: #1a221f;
-    --accent: #d1a6c6;
-    --accent-ink: #1b1219;
-    --focus: #d1a6c6;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme='dark'] {
-  --paper: #141a18;
-  --ink: #e4eae6;
-  --muted: #9aa7a0;
-  --rule: #2c3632;
-  --band: #1a221f;
-  --accent: #d1a6c6;
-  --accent-ink: #1b1219;
-  --focus: #d1a6c6;
   color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --ink: #111316;
+  --ink-2: #3f4650;
+  --muted: #5f6773;
+  --line: #e3e6ea;
+  --soft: #f1f3f5;
+  --live: #1a8a5a;
+  --scrim: rgb(17 19 22 / 0.4);
+  color-scheme: light;
 }
 
 *,
@@ -56,16 +40,16 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
-  font-size: 1.0625rem;
+  font-size: 1rem;
   line-height: 1.6;
-  font-variant-numeric: tabular-nums;
   text-rendering: optimizeLegibility;
 }
 
@@ -80,18 +64,26 @@ ol {
 
 a {
   color: inherit;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
   text-underline-offset: 0.2em;
 }
 
-a:hover {
-  text-decoration-color: currentColor;
+button {
+  font: inherit;
+  color: inherit;
+}
+
+kbd {
+  padding: 0.05em 0.4em;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.85em;
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--ink);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 .visually-hidden {
@@ -104,11 +96,14 @@ a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

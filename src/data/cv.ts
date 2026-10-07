@@ -14,6 +14,16 @@ export interface Role {
   end: string;
   summary: Localized;
   highlights: Localized[];
+  /** Short labels shown as chips on the website. */
+  tags: Localized[];
+}
+
+export interface Project {
+  name: string;
+  description: Localized;
+  tags: Localized[];
+  /** Empty hides the link. */
+  href: string;
 }
 
 export interface Area {
@@ -41,8 +51,12 @@ export interface Link {
 export const cv = {
   name: 'Naun Flores',
   headline: {
-    en: 'Senior Odoo Developer and Functional Consultant',
-    es: 'Developer Senior Odoo y Consultor Funcional',
+    en: 'Technology consultant and software developer',
+    es: 'Consultor de tecnología y desarrollador de software',
+  },
+  tagline: {
+    en: 'Senior Odoo Developer. I implement management and inventory systems in large companies.',
+    es: 'Developer Senior Odoo. Implemento sistemas de gestión e inventario en empresas grandes.',
   },
   profession: {
     en: 'Systems Engineer',
@@ -57,12 +71,9 @@ export const cv = {
   ] as Link[],
 
   summary: {
-    en: 'Systems engineer who designs, builds and rolls out Odoo ERP solutions end to end. Since 2020 I have worked with every Odoo release from version 11 to version 19, writing custom modules, migrating databases between versions and connecting Odoo to external systems with Python and FastAPI. On the functional side I specialise in accounting and payroll, and I also configure sales, inventory and purchasing flows. Today I lead the development and implementation team at GRUPO SOLUTECNO, where I turn business requirements into working software and guide clients from analysis to go-live.',
-    es: 'Ingeniero de sistemas que diseña, desarrolla e implementa soluciones ERP con Odoo de principio a fin. Desde 2020 he trabajado con todas las versiones de Odoo, de la 11 a la 19, escribiendo módulos a medida, migrando bases de datos entre versiones e integrando Odoo con sistemas externos con Python y FastAPI. En lo funcional me especializo en contabilidad y nómina, y también configuro flujos de ventas, inventario y compras. Actualmente lidero el equipo de desarrollo e implementación en GRUPO SOLUTECNO, donde convierto requerimientos de negocio en software funcionando y acompaño a los clientes desde el análisis hasta la puesta en marcha.',
+    en: 'Systems engineer and technology consultant who turns business processes into working software. Since 2020 I have led Odoo implementations end to end at GRUPO SOLUTECNO, across every release from version 11 to 19: requirements analysis, custom modules in Python and OWL, data migrations, FastAPI integrations and go-live. I specialise in accounting and payroll and have implemented management and inventory systems for large operations. I also build my own products, like LexOS, a virtual lawyer built on the complete case law of El Salvador.',
+    es: 'Ingeniero de sistemas y consultor de tecnología que convierte procesos de negocio en software funcionando. Desde 2020 lidero implementaciones de Odoo de principio a fin en GRUPO SOLUTECNO, en todas las versiones de la 11 a la 19: análisis de requerimientos, módulos a medida en Python y OWL, migraciones de datos, integraciones con FastAPI y puesta en marcha. Me especializo en contabilidad y nómina, y he implementado sistemas de gestión e inventario en operaciones grandes. También construyo productos propios, como LexOS, un abogado virtual con toda la jurisprudencia de El Salvador.',
   },
-
-  /** Odoo releases worked with, oldest first. */
-  odooVersions: [11, 12, 13, 14, 15, 16, 17, 18, 19],
 
   experience: [
     {
@@ -108,8 +119,30 @@ export const cv = {
           es: 'Integro Odoo con sistemas externos mediante sus APIs y servicios construidos con FastAPI.',
         },
       ],
+      tags: [
+        { en: 'Odoo 11–19', es: 'Odoo 11–19' },
+        { en: 'Accounting', es: 'Contabilidad' },
+        { en: 'Payroll', es: 'Nómina' },
+        { en: 'Inventory', es: 'Inventario' },
+      ],
     },
   ] as Role[],
+
+  projects: [
+    {
+      name: 'LexOS',
+      description: {
+        en: 'A virtual lawyer built on the complete case law of El Salvador.',
+        es: 'Un abogado virtual con toda la jurisprudencia de El Salvador.',
+      },
+      // TODO: add the stack and a public link when available.
+      tags: [
+        { en: 'Legal tech', es: 'Legal tech' },
+        { en: 'Own product', es: 'Producto propio' },
+      ],
+      href: '',
+    },
+  ] as Project[],
 
   areas: [
     {
@@ -136,8 +169,8 @@ export const cv = {
     {
       name: { en: 'Inventory', es: 'Inventario' },
       items: {
-        en: 'Stock control, inventory valuation, lots and serial-number traceability.',
-        es: 'Control de existencias, valoración de inventario, trazabilidad por lotes y números de serie.',
+        en: 'Stock control and valuation, lot and serial-number traceability, large catalogues.',
+        es: 'Control y valoración de existencias, trazabilidad por lotes y números de serie, catálogos grandes.',
       },
     },
     {
@@ -149,16 +182,7 @@ export const cv = {
     },
   ] as Area[],
 
-  technical: [
-    'Python',
-    'Odoo ORM',
-    'OWL',
-    'JavaScript',
-    'XML / QWeb',
-    'FastAPI',
-    'PostgreSQL',
-    'Git',
-  ],
+  technical: ['Odoo', 'Python', 'OWL', 'FastAPI', 'JavaScript', 'PostgreSQL', 'XML / QWeb', 'Git'],
 
   education: [
     {
