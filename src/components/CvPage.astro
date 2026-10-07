@@ -100,8 +100,8 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
             {s.downloadPdf}
           </a>
           <button type="button" class="square" data-theme-toggle aria-label={s.themeToggle}>
-            <Icon name="moon" class="when-dark" />
-            <Icon name="sun" class="when-light" />
+            <Icon name="moon" class="to-dark" />
+            <Icon name="sun" class="to-light" />
           </button>
           <a
             class="square lang"
@@ -270,11 +270,11 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
 
 <script>
   const root = document.documentElement;
-  const current = () => root.dataset.theme ?? 'dark';
+  const current = () => root.dataset.theme ?? 'light';
 
   document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
-      const next = current() === 'dark' ? 'light' : 'dark';
+      const next = current() === 'light' ? 'dark' : 'light';
       root.dataset.theme = next;
       try {
         localStorage.setItem('theme', next);
@@ -393,16 +393,16 @@ const updated = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-SV', {
     opacity: 0.88;
   }
 
-  /* Only the icon for the current theme is shown. */
-  .square :global(.when-light) {
+  /* The icon shows the theme you switch to: moon on white, sun on black. */
+  .square :global(.to-light) {
     display: none;
   }
 
-  :global([data-theme='light']) .square :global(.when-light) {
+  :global([data-theme='dark']) .square :global(.to-light) {
     display: block;
   }
 
-  :global([data-theme='light']) .square :global(.when-dark) {
+  :global([data-theme='dark']) .square :global(.to-dark) {
     display: none;
   }
 

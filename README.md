@@ -3,7 +3,8 @@
 Sitio personal y CV de **Naun Flores**, consultor de tecnología y desarrollador de software. Developer Senior Odoo e implementador de sistemas de gestión e inventario, creador de LexOS.
 
 - Inglés por defecto en `/`, español en `/es/`.
-- Negro por defecto, con modo claro opcional (se recuerda la elección).
+- Publicado en **https://naunflores.com**.
+- Claro por defecto, con modo negro opcional (se recuerda la elección).
 - Paleta de comandos con `Ctrl K` / `⌘K`: descargar el CV, cambiar idioma o tema e ir a cada sección.
 - CV descargable en PDF y DOCX, en inglés y en español, listo para subir a plataformas como Outlier: Arial, una columna, sin tablas, encabezados ni pies de página, más de 300 palabras.
 
