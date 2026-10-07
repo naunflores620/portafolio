@@ -177,7 +177,7 @@ export const cv = {
 
   languages: [
     { name: { en: 'Spanish', es: 'Español' }, level: { en: 'Native', es: 'Nativo' } },
-    // TODO: English level, e.g. { en: 'Professional working proficiency (B2)', es: 'Profesional (B2)' }.
+    { name: { en: 'English', es: 'Inglés' }, level: { en: 'Intermediate', es: 'Intermedio' } },
   ] as Language[],
 };
 
